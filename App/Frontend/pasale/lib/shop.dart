@@ -142,7 +142,7 @@ class _ShopHomePageState extends State<ShopHomePage>
   // Voice recognition fields
   late stt.SpeechToText _speech;
   bool _isListening = false;
-  bool _isDialogOpen = false; // <-- Added dialog open flag
+  // _isDialogOpen removed
 
   // Bottom Navbar index
   int _selectedNavbarIndex = 0;
@@ -746,151 +746,60 @@ class _ShopHomePageState extends State<ShopHomePage>
     }
   }
 
-  // --- MIC FUNCTION WITH POPUP ---
+  // --- MIC FUNCTION ---
   void _listenVoice() async {
     if (!_isListening) {
-      // Request microphone permission first
+      // 1. Request Permission explicitly
       var status = await Permission.microphone.request();
-
       if (status.isDenied) {
-        _showSnackBar(
-            'माइक्रोफोन अनुमति आवश्यक छ! / Microphone permission required!',
-            Colors.red);
+        _showSnackBar('Microphone permission required!', Colors.red);
         return;
       }
-
       if (status.isPermanentlyDenied) {
-        _showSnackBar(
-            'कृपया सेटिङमा जानुहोस् र माइक्रोफोन अनुमति दिनुहोस्! / Please enable microphone in Settings!',
-            Colors.red);
+        _showSnackBar('Enable microphone in settings!', Colors.red);
         openAppSettings();
         return;
       }
 
-      // Only initialize if not already initialized
-      if (!_speech.isAvailable) {
-        bool available = await _speech.initialize(
-          onStatus: (val) {
-            if (val == 'done' || val == 'notListening') {
+      // 2. Initialize Speech
+      bool available = await _speech.initialize(
+        onStatus: (val) async {
+          if (val == 'done' || val == 'notListening') {
+            if (mounted) {
               setState(() => _isListening = false);
-              _closeListeningDialog();
             }
-          },
-          onError: (val) {
+          }
+        },
+        onError: (val) {
+          if (mounted) {
             setState(() => _isListening = false);
-            _closeListeningDialog();
             _showSnackBar('Mic error: ${val.errorMsg}', Colors.red);
-          },
-        );
-        if (!available) {
-          _showSnackBar(
-              'Speech recognition unavailable! Please check if Google app is installed.',
-              Colors.red);
-          return;
-        }
-      }
-
-      setState(() => _isListening = true);
-      _showListeningDialog();
-      await _speech.listen(
-        localeId: 'ne_NP', // Try removing if Nepali not supported
-        onResult: (val) {
-          setState(() {
-            _searchController.text = val.recognizedWords;
-            _filterProducts();
-          });
-
-          // Close dialog after 2 seconds of recognizing voice
-          if (val.recognizedWords.isNotEmpty) {
-            Future.delayed(Duration(seconds: 2), () async {
-              if (_isListening) {
-                setState(() => _isListening = false);
-                await _speech.stop();
-                _closeListeningDialog();
-              }
-            });
           }
         },
       );
+
+      if (available) {
+        setState(() => _isListening = true);
+        await _speech.listen(
+          localeId: 'ne_NP',
+          listenMode: stt.ListenMode.confirmation,
+          onResult: (val) {
+            setState(() {
+              _searchController.text = val.recognizedWords;
+              _filterProducts();
+            });
+          },
+        );
+      } else {
+        _showSnackBar('Speech recognition unavailable!', Colors.red);
+      }
     } else {
       setState(() => _isListening = false);
       await _speech.stop();
-      _closeListeningDialog();
     }
   }
 
-  void _showListeningDialog() {
-    if (!_isDialogOpen) {
-      _isDialogOpen = true;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => WillPopScope(
-          onWillPop: () async => false,
-          child: AlertDialog(
-            contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 24),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.close, color: Colors.grey[600]),
-                      onPressed: () async {
-                        setState(() => _isListening = false);
-                        await _speech.stop();
-                        _closeListeningDialog();
-                      },
-                      tooltip: "बन्द गर्नुहोस्",
-                      padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(),
-                    ),
-                  ],
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.shade50,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blueGrey.shade100,
-                        blurRadius: 20,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  padding: EdgeInsets.all(22),
-                  child: Icon(Icons.mic_rounded, color: Colors.red, size: 60),
-                ),
-                SizedBox(height: 14),
-                Text(
-                  "आवाज सुन्दैछ...\nकृपया बोल्नुहोस्!",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "Voice is listening...",
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ).then((_) {
-        _isDialogOpen = false;
-      });
-    }
-  }
-
-  void _closeListeningDialog() {
-    if (_isDialogOpen) {
-      Navigator.of(context, rootNavigator: true).pop();
-      _isDialogOpen = false;
-    }
-  }
-  // --- END MIC FUNCTION WITH POPUP ---
+  // --- END MIC FUNCTION ---
 
   // --- Cool Bottom Navbar ---
   Widget _buildBottomNavbar() {
