@@ -17,23 +17,27 @@ class _LoginPageState extends State<LoginPage> {
   final _nameController = TextEditingController();
   final _confirmPassController = TextEditingController();
 
-  // Dark Green Theme Colors
-  final Color _primaryColor = const Color(0xFF1B5E20); // Dark Green
-  final Color _accentColor = const Color(0xFF4CAF50); // Standard Green
-  final Color _lightBgColor = const Color(0xFFE8F5E9); // Light Green tint
+  // Enhanced Theme Colors
+  final Color _primaryColor = const Color(0xFF2E7D32); // Richer Forest Green
+  final Color _darkGreen = const Color(0xFF1B5E20);
+  final Color _lightGreen = const Color(0xFFE8F5E9);
+  final Color _iconColor = const Color(0xFF43A047);
 
   void _showDialog(String title, String message, {bool success = false}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(title,
-            style: TextStyle(color: success ? _primaryColor : Colors.red)),
-        content: Text(message),
+            style: TextStyle(
+                color: success ? _primaryColor : Colors.red,
+                fontWeight: FontWeight.bold)),
+        content: Text(message, style: const TextStyle(fontSize: 16)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("OK", style: TextStyle(color: Colors.black)),
+            child: Text("OK",
+                style: TextStyle(color: _primaryColor, fontSize: 16)),
           )
         ],
       ),
@@ -46,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         barrierDismissible: false,
         builder: (_) => Center(
-          child: CircularProgressIndicator(color: _accentColor),
+          child: CircularProgressIndicator(color: _primaryColor),
         ),
       );
       await Future.delayed(const Duration(seconds: 1));
@@ -66,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         barrierDismissible: false,
         builder: (_) => Center(
-          child: CircularProgressIndicator(color: _accentColor),
+          child: CircularProgressIndicator(color: _primaryColor),
         ),
       );
       await Future.delayed(const Duration(seconds: 1));
@@ -74,13 +78,13 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         _showDialog("Sign Up Successful", "Welcome, ${_nameController.text}!",
             success: true);
-        // Optionally, clear fields
+        // Clear fields
         _userController.clear();
         _passController.clear();
         _nameController.clear();
         _confirmPassController.clear();
         setState(() {
-          isLogin = true; // Switch back to login after successful sign up
+          isLogin = true;
         });
       }
     }
@@ -91,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
       SnackBar(
         content: Text("$name login clicked!"),
         backgroundColor: _primaryColor,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -98,80 +103,83 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _primaryColor,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              // Green curved header
-              Container(
-                height: 340,
-                decoration: BoxDecoration(
-                  color: _primaryColor,
-                  borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(90),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                // Header with Gradient
+                Container(
+                  height: 380,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [_darkGreen, _primaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(100),
+                    ),
                   ),
                 ),
-              ),
-              Column(
-                children: [
-                  const SizedBox(height: 56),
-                  // Header text
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 36),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
+                // Overlay design element
+                Positioned(
+                  top: -50,
+                  left: -50,
+                  child: Container(
+                    width: 200,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 100,
+                  right: -30,
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 80),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ShaderMask(
-                            shaderCallback: (Rect bounds) {
-                              return LinearGradient(
-                                colors: [
-                                  const Color(0xFFC8E6C9),
-                                  const Color(0xFF81C784)
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ).createShader(bounds);
-                            },
-                            child: const Text(
-                              "नमस्ते!",
-                              style: TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 1.5,
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 8,
-                                    color: Colors.black26,
-                                    offset: Offset(2, 2),
-                                  ),
-                                ],
-                              ),
+                          const Text(
+                            "नमस्ते!",
+                            style: TextStyle(
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                              height: 1.0,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 10),
                           Row(
-                            children: const [
-                              Icon(Icons.storefront,
-                                  color: Colors.white70, size: 32),
-                              SizedBox(width: 8),
+                            children: [
+                              Icon(Icons.storefront_rounded,
+                                  color: Colors.white.withOpacity(0.9),
+                                  size: 28),
+                              const SizedBox(width: 8),
                               Text(
                                 "पसलेमा स्वागत छ",
                                 style: TextStyle(
-                                  fontSize: 28,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 1.2,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 6,
-                                      color: Colors.black26,
-                                      offset: Offset(1, 2),
-                                    ),
-                                  ],
+                                  fontSize: 24,
+                                  color: Colors.white.withOpacity(0.95),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -179,279 +187,353 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                  ),
+                  ],
+                ),
+              ],
+            ),
 
-                  const SizedBox(height: 52),
-                  // White card with tabs and form
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 22),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 36, horizontal: 18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(36),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
+            // Card Section
+            Transform.translate(
+              offset: const Offset(0, -80),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 25,
+                      offset: const Offset(0, 10),
                     ),
-                    child: Column(
-                      children: [
-                        // Tabs
-                        Container(
-                          decoration: BoxDecoration(
-                            color: _lightBgColor,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => setState(() => isLogin = true),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: isLogin
-                                          ? _primaryColor
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
-                                    child: Center(
-                                      child: Text(
-                                        "Log In",
-                                        style: TextStyle(
-                                          color: isLogin
-                                              ? Colors.white
-                                              : _primaryColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Custom Tab Switcher
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: _lightGreen,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => isLogin = true),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  color: isLogin
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: isLogin
+                                      ? [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.08),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          )
+                                        ]
+                                      : [],
                                 ),
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () => setState(() => isLogin = false),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: !isLogin
-                                          ? _primaryColor
-                                          : Colors.transparent,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 14),
-                                    child: Center(
-                                      child: Text(
-                                        "Sign In",
-                                        style: TextStyle(
-                                          color: !isLogin
-                                              ? Colors.white
-                                              : _primaryColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 22),
-                        // Form
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              if (!isLogin) ...[
-                                // Name field for sign up
-                                TextFormField(
-                                  controller: _nameController,
-                                  decoration: InputDecoration(
-                                    hintText: "Full Name",
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 18, horizontal: 22),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(28),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: _lightBgColor,
-                                    prefixIcon: Icon(Icons.person_outline,
-                                        color: _primaryColor),
-                                  ),
-                                  validator: (v) {
-                                    if (!isLogin &&
-                                        (v == null || v.trim().length < 2)) {
-                                      return "Enter your name";
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                              // Username
-                              TextFormField(
-                                controller: _userController,
-                                decoration: InputDecoration(
-                                  hintText: "Username or Email",
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 18, horizontal: 22),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(28),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  filled: true,
-                                  fillColor: _lightBgColor,
-                                  prefixIcon: Icon(Icons.email_outlined,
-                                      color: _primaryColor),
-                                ),
-                                validator: (v) =>
-                                    v == null || v.isEmpty ? "Required" : null,
-                              ),
-                              const SizedBox(height: 16),
-                              // Password
-                              TextFormField(
-                                controller: _passController,
-                                obscureText: _obscure,
-                                decoration: InputDecoration(
-                                  hintText: "Password",
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 18, horizontal: 22),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(28),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  filled: true,
-                                  fillColor: _lightBgColor,
-                                  prefixIcon: Icon(Icons.lock_outline,
-                                      color: _primaryColor),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                        _obscure
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                        color: _primaryColor),
-                                    onPressed: () =>
-                                        setState(() => _obscure = !_obscure),
-                                  ),
-                                ),
-                                validator: (v) {
-                                  if (v == null || v.isEmpty) return "Required";
-                                  if (v.length < 6) return "Min 6 chars";
-                                  return null;
-                                },
-                              ),
-                              if (!isLogin) ...[
-                                const SizedBox(height: 16),
-                                // Confirm Password
-                                TextFormField(
-                                  controller: _confirmPassController,
-                                  obscureText: _obscureConfirm,
-                                  decoration: InputDecoration(
-                                    hintText: "Confirm Password",
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 18, horizontal: 22),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(28),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: _lightBgColor,
-                                    prefixIcon: Icon(Icons.lock_reset,
-                                        color: _primaryColor),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                          _obscureConfirm
-                                              ? Icons.visibility
-                                              : Icons.visibility_off,
-                                          color: _primaryColor),
-                                      onPressed: () => setState(() =>
-                                          _obscureConfirm = !_obscureConfirm),
-                                    ),
-                                  ),
-                                  validator: (v) {
-                                    if (!isLogin && v != _passController.text) {
-                                      return "Passwords do not match";
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ],
-                              const SizedBox(height: 20),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: isLogin ? _onLogin : _onSignIn,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: _primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    elevation: 5,
-                                  ),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                child: Center(
                                   child: Text(
-                                    isLogin ? "Log In" : "Sign In",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Colors.white),
+                                    "Log In",
+                                    style: TextStyle(
+                                      color: isLogin
+                                          ? _darkGreen
+                                          : Colors.grey[600],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 18),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                                height: 1, width: 32, color: Colors.grey[300]),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: Text("or",
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.black54)),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => setState(() => isLogin = false),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  color: !isLogin
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: !isLogin
+                                      ? [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.08),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          )
+                                        ]
+                                      : [],
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                child: Center(
+                                  child: Text(
+                                    "Sign In",
+                                    style: TextStyle(
+                                      color: !isLogin
+                                          ? _darkGreen
+                                          : Colors.grey[600],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                            Container(
-                                height: 1, width: 32, color: Colors.grey[300]),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Form
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          if (!isLogin) ...[
+                            _buildTextField(
+                              controller: _nameController,
+                              hint: "Full Name",
+                              icon: Icons.person_outline_rounded,
+                              validator: (v) {
+                                if (!isLogin &&
+                                    (v == null || v.trim().length < 2)) {
+                                  return "Enter your name";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
                           ],
-                        ),
-                        const SizedBox(height: 10),
-                        // Social buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.facebook,
-                                  color: Color(0xFF1877F2), size: 32),
-                              onPressed: () => _onSocial("Facebook"),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: Icon(Icons.g_mobiledata,
-                                  color: Colors.red[700], size: 40),
-                              onPressed: () => _onSocial("Google"),
+                          _buildTextField(
+                            controller: _userController,
+                            hint: "Username or Email",
+                            icon: Icons.email_outlined,
+                            validator: (v) =>
+                                v == null || v.isEmpty ? "Required" : null,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildTextField(
+                            controller: _passController,
+                            hint: "Password",
+                            icon: Icons.lock_outline_rounded,
+                            isPassword: true,
+                            obscure: _obscure,
+                            onVisibilityToggle: () =>
+                                setState(() => _obscure = !_obscure),
+                            validator: (v) {
+                              if (v == null || v.isEmpty) return "Required";
+                              if (v.length < 6) return "Min 6 chars";
+                              return null;
+                            },
+                          ),
+                          if (!isLogin) ...[
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              controller: _confirmPassController,
+                              hint: "Confirm Password",
+                              icon: Icons.lock_reset_rounded,
+                              isPassword: true,
+                              obscure: _obscureConfirm,
+                              onVisibilityToggle: () => setState(
+                                  () => _obscureConfirm = !_obscureConfirm),
+                              validator: (v) {
+                                if (!isLogin && v != _passController.text) {
+                                  return "Passwords do not match";
+                                }
+                                return null;
+                              },
                             ),
                           ],
+                          const SizedBox(height: 30),
+
+                          // Main Button
+                          Container(
+                            width: double.infinity,
+                            height: 54,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: LinearGradient(
+                                colors: [_primaryColor, _darkGreen],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _primaryColor.withOpacity(0.3),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: isLogin ? _onLogin : _onSignIn,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                isLogin ? "LOG IN" : "SIGN UP",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                            child:
+                                Divider(color: Colors.grey[300], thickness: 1)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text("or continue with",
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500)),
+                        ),
+                        Expanded(
+                            child:
+                                Divider(color: Colors.grey[300], thickness: 1)),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildSocialButton(
+                          icon: Icons.facebook,
+                          color: const Color(0xFF1877F2),
+                          onPressed: () => _onSocial("Facebook"),
+                        ),
+                        const SizedBox(width: 20),
+                        _buildSocialButton(
+                          icon: Icons.g_mobiledata,
+                          color: const Color(0xFFDB4437),
+                          size: 38,
+                          onPressed: () => _onSocial("Google"),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    String? Function(String?)? validator,
+    bool isPassword = false,
+    bool obscure = false,
+    VoidCallback? onVisibilityToggle,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(fontSize: 15),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey[500], fontSize: 15),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        filled: true,
+        fillColor: const Color(0xFFF5F6F9),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: _primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+        ),
+        prefixIcon: Icon(icon, color: _iconColor, size: 22),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  obscure
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: Colors.grey[600],
+                  size: 20,
+                ),
+                onPressed: onVisibilityToggle,
+              )
+            : null,
+      ),
+      validator: validator,
+    );
+  }
+
+  Widget _buildSocialButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+    double size = 28,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(50),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.grey[200]!),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Icon(icon, color: color, size: size),
         ),
       ),
     );
