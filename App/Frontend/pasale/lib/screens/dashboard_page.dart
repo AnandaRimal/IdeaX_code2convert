@@ -1,25 +1,75 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../shop.dart';
 
 // CSV EXPORT FUNCTION
-Future<void> exportSalesToCsv(
-    BuildContext context, List<SaleRecord> sales) async {
-  final buffer = StringBuffer();
-  buffer.writeln('Product,DateTime,Quantity,Amount,Type');
+// CSV EXPORT FUNCTION
+Future<void> exportSalesToCsv(BuildContext context, List<SaleRecord> sales,
+    List<Product> products) async {
+  // 1. Aggregate Sales
+  Map<String, Map<String, dynamic>> aggregated = {};
+
+  // Helper to format date
+  String formatDate(DateTime dt) =>
+      "${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}";
+
   for (var sale in sales) {
-    buffer.writeln(
-        '${sale.productName},${sale.time.toIso8601String()},${sale.quantity},${sale.totalAmount},${sale.type}');
+    String dateKey = formatDate(sale.time);
+    String key = "${dateKey}_${sale.productName}_${sale.type}";
+
+    if (!aggregated.containsKey(key)) {
+      aggregated[key] = {
+        'date': dateKey,
+        'productName': sale.productName,
+        'type': sale.type,
+        'quantity': 0.0,
+        'amount': 0.0,
+      };
+    }
+    aggregated[key]!['quantity'] += sale.quantity;
+    aggregated[key]!['amount'] += sale.totalAmount;
   }
+
+  final buffer = StringBuffer();
+  // Add UTF-8 BOM for Excel compatibility
+  buffer.write('\uFEFF');
+  buffer.writeln('Product,Date,Type,Quantity,Unit,Amount');
+
+  // Sort by date descending
+  var sortedKeys = aggregated.keys.toList()..sort((a, b) => b.compareTo(a));
+
+  for (var key in sortedKeys) {
+    var item = aggregated[key]!;
+
+    // Find unit
+    String unit = '-';
+    try {
+      var prod = products.firstWhere((p) => p.name == item['productName'],
+          orElse: () => Product(
+              name: '',
+              category: '',
+              price: 0,
+              unit: '-',
+              quantity: 0)); // Fallback
+      unit = prod.unit;
+    } catch (e) {
+      unit = '-';
+    }
+
+    buffer.writeln(
+        '"${item['productName']}","\t${item['date']}","${item['type']}",${item['quantity']},"$unit",${item['amount']}');
+  }
+
   final csv = buffer.toString();
 
   try {
     final directory = await getTemporaryDirectory();
     final path = '${directory.path}/sales_log.csv';
     final file = File(path);
-    await file.writeAsString(csv);
+    await file.writeAsString(csv, encoding: const Utf8Codec());
 
     await Share.shareXFiles([XFile(file.path)], text: 'Sales Log CSV');
     ScaffoldMessenger.of(context).showSnackBar(
@@ -130,7 +180,8 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
             icon: Icon(Icons.download_rounded),
             tooltip: "डाटा निर्यात गर्नुहोस्",
-            onPressed: () => exportSalesToCsv(context, widget.sales),
+            onPressed: () =>
+                exportSalesToCsv(context, widget.sales, widget.products),
           ),
         ],
       ),
@@ -158,7 +209,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   SizedBox(height: 10),
                   // Quick Actions
                   ElevatedButton.icon(
-                    onPressed: () => exportSalesToCsv(context, widget.sales),
+                    onPressed: () => exportSalesToCsv(
+                        context, widget.sales, widget.products),
                     icon: Icon(Icons.file_download, size: 20),
                     label: Text("बिक्री विवरण (CSV)"),
                     style: ElevatedButton.styleFrom(
