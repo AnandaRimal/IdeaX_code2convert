@@ -27,11 +27,11 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "lib/img/logo.jpeg"
+  image_path: "lib/img/logo.jpg"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "lib/img/logo.jpeg"
+  adaptive_icon_foreground: "lib/img/logo.jpg"
 
 flutter:
   uses-material-design: true
   assets:
-    - lib/img/logo.jpeg
+    - lib/img/logo.jpg
