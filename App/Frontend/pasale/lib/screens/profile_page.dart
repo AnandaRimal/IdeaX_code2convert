@@ -108,227 +108,57 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('प्रोफाइल र पुरस्कार'),
-        backgroundColor: Color(0xFF1B5E20),
-        elevation: 0,
-      ),
+      backgroundColor: Color(0xFFF5F5F5),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section with Profile Info
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF1B5E20), Color(0xFF2E7D32)],
-                ),
-              ),
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child:
-                        Icon(Icons.person, size: 50, color: Color(0xFF1B5E20)),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Ram Bahadur',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    'rambahadur@gmail.com',
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                  SizedBox(height: 12),
-                  Divider(color: Colors.white30, height: 1),
-                  SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Icon(Icons.store, color: Colors.white70, size: 18),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'सबित्रा किराना तथा चिया पसल',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.phone, color: Colors.white70, size: 18),
-                      SizedBox(width: 8),
-                      Text(
-                        '९८४५६७८९०१',
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, color: Colors.white70, size: 18),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'काठमाडौं, नेपाल',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Total Points Card - Smaller and compact
-            Container(
-              margin: EdgeInsets.all(16),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.orange.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.emoji_events, size: 36, color: Colors.white),
-                      SizedBox(width: 12),
-                      Text(
-                        'कुल पुरस्कार अंक',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '$totalPoints',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Rewards Breakdown
+            _buildProfileHeader(),
+            SizedBox(height: 20),
+            _buildPointsCard(),
+            SizedBox(height: 24),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'पुरस्कार विवरण',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1B5E20),
                     ),
                   ),
                   SizedBox(height: 16),
-
-                  // Sale Transactions
-                  _buildRewardCard(
-                    icon: Icons.sell,
+                  _buildRewardTile(
+                    icon: Icons.sell_rounded,
                     title: 'बिक्री कारोबार',
-                    subtitle: '$saleTransactions कारोबार × 2 अंक',
+                    subtitle: '$saleTransactions कारोबार',
                     points: saleTransactions * 2,
                     color: Colors.green,
                   ),
-
-                  // Purchase Transactions
-                  _buildRewardCard(
-                    icon: Icons.shopping_cart,
+                  _buildRewardTile(
+                    icon: Icons.shopping_cart_rounded,
                     title: 'खरिद कारोबार',
-                    subtitle: '$purchaseTransactions कारोबार × 1 अंक',
+                    subtitle: '$purchaseTransactions कारोबार',
                     points: purchaseTransactions * 1,
                     color: Colors.blue,
                   ),
-
-                  // Daily Bonus
-                  _buildRewardCard(
-                    icon: Icons.calendar_today,
+                  _buildRewardTile(
+                    icon: Icons.task_alt_rounded,
                     title: 'दैनिक बोनस',
-                    subtitle: '$dailyBonuses दिन (10+ कारोबार) × 10 अंक',
+                    subtitle: '$dailyBonuses दिन पूरा',
                     points: dailyBonuses * 10,
                     color: Colors.orange,
                   ),
-
-                  // Streak Bonus
-                  _buildRewardCard(
-                    icon: Icons.local_fire_department,
+                  _buildRewardTile(
+                    icon: Icons.local_fire_department_rounded,
                     title: 'स्ट्रीक बोनस',
-                    subtitle:
-                        '$streakBonuses सप्ताह (7-दिन, 5+ दैनिक) × 50 अंक',
+                    subtitle: '$streakBonuses सप्ताह',
                     points: streakBonuses * 50,
                     color: Colors.red,
                   ),
-
-                  SizedBox(height: 24),
-
-                  // Info Card
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green.shade200),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.info_outline, color: Color(0xFF1B5E20)),
-                            SizedBox(width: 8),
-                            Text(
-                              'पुरस्कार नियम',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Color(0xFF1B5E20),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        _buildInfoRow('• बिक्री कारोबार: 2 अंक'),
-                        _buildInfoRow('• खरिद कारोबार: 1 अंक'),
-                        _buildInfoRow('• दैनिक बोनस: 10 अंक (10+ कारोबार)'),
-                        _buildInfoRow(
-                            '• स्ट्रीक बोनस: 50 अंक (7-दिन, 5+ दैनिक)'),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 24),
+                  SizedBox(height: 40),
                 ],
               ),
             ),
@@ -338,56 +168,259 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildRewardCard({
+  Widget _buildProfileHeader() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(20, 60, 20, 30),
+      decoration: BoxDecoration(
+        color: Color(0xFF1B5E20),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+              Text(
+                'प्रोफाइल',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.settings, color: Colors.white, size: 24),
+                onPressed: () {}, // Placeholder for settings
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 10)
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 35,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, size: 40, color: Color(0xFF1B5E20)),
+                ),
+              ),
+              SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ram Bahadur',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '९८४५६७८९०१',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'सबित्रा किराना तथा चिया पसल',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.location_on,
+                              color: Colors.white, size: 14),
+                          SizedBox(width: 4),
+                          Text(
+                            'काठमाडौं, नेपाल',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPointsCard() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'कुल पुरस्कार अंक',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '$totalPoints',
+                    style: TextStyle(
+                      color: Color(0xFFFFB300), // Gold/Orange color for text
+                      fontSize: 42,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Color(0xFFFFF8E1), // Light yellow bg
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.emoji_events_rounded,
+                  size: 40,
+                  color: Color(0xFFFFB300),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 24),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: 0.0, // Initial state as requested
+              backgroundColor: Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFB300)),
+              minHeight: 10,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'अर्को इनामको लागि ७०% पूरा भयो',
+            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRewardTile({
     required IconData icon,
     required String title,
     required String subtitle,
     required int points,
     required Color color,
   }) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Container(
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+    return Container(
+      margin: EdgeInsets.only(bottom: 15),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
-          child: Icon(icon, color: color, size: 28),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        subtitle: Text(subtitle, style: TextStyle(fontSize: 13)),
-        trailing: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
           ),
-          child: Text(
-            '+$points',
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                ),
+              ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '+$points',
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
